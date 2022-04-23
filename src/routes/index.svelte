@@ -14,7 +14,8 @@
 	let group: THREE.group;
 	let renderer: THREE.renderer;
 
-	let opacity = 0.2;
+	let opacity = 0.5;
+	let allWhite = false;
 
 	let y: number;
 
@@ -50,7 +51,8 @@
 			uniforms: {
 				pointTexture: { value: new THREE.TextureLoader().load('images/point.png') },
 				scrollPos: { value: 1 },
-				opacity: { value: opacity }
+				opacity: { value: 1 },
+				colorAdd: { value: 0 }
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragShader,
@@ -60,7 +62,7 @@
 		});
 
 		fetchAndAdd('all-reduced', group, material, 50);
-		fetchAndAdd('layer-100', group, material);
+		fetchAndAdd('layer-101', group, material);
 
 		const animate = () => {
 			const time = Date.now() * 0.001;
@@ -78,7 +80,8 @@
 	});
 
 	$: if (material) material.uniforms.scrollPos.value = camera.position.y;
-	$: if (material) material.uniforms.opacity.value = opacity;
+	$: if (material) material.uniforms.opacity.value = opacity * opacity * opacity * opacity;
+	$: if (material) material.uniforms.colorAdd.value = allWhite ? 1 : 0;
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -86,7 +89,8 @@
 <div class="height" style={`height: calc(100vh + ${actualHeight}px)`} />
 
 <div class="container">
-	<input type="range" min="0" max="1" step="0.01" bind:value={opacity} />
+	<input type="range" min="0" max="1" step="0.001" bind:value={opacity} />
+	<input type="checkbox" bind:checked={allWhite} />
 </div>
 
 <style>
