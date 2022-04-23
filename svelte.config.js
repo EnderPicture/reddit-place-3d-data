@@ -14,7 +14,16 @@ const config = {
 	],
 
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			// default options are shown
+			pages: 'build',
+			assets: 'build',
+			fallback: null,
+			precompress: false
+		}),
+		prerender: {
+			default: true
+		},
 
 		vite: {
 			css: {
