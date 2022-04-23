@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { timeScale } from './config';
+import { layerRange, timeScale } from './config';
 
 type placeDataBuffers = {
 	timeBuffer: Uint32Array;
@@ -133,3 +133,21 @@ export const fetchAndAdd = (
 			}
 		});
 };
+
+export const timeToLayer = (time: number) => {
+	return searchLayer(time, layerRange, 0, layerRange.length);
+};
+const searchLayer = (elem, lst, start, end) => {
+	if (end - 1 <= start) {
+			return start;
+	}
+	let mid = Math.floor((start + end) / 2);
+	if (elem < lst[mid]) {
+			return searchLayer(elem, lst, start, mid);
+	}
+	if (elem > lst[mid]) {
+			return searchLayer(elem, lst, mid, end);
+	}
+	// It's in the list, and we found it!!
+	return mid;
+}
