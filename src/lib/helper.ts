@@ -137,17 +137,44 @@ export const fetchAndAdd = (
 export const timeToLayer = (time: number) => {
 	return searchLayer(time, layerRange, 0, layerRange.length);
 };
+
+const reverseGroup = (arr: [], groupSize: number) => {
+	return arr
+		.reduce((acc, value, index) => {
+			if (index % groupSize === 0) {
+				acc.push([]);
+			}
+			acc[acc.length - 1].push(value);
+			return acc;
+		}, [])
+		.reverse()
+		.reduce((acc: [], value: []) => {
+			acc.push(...value);
+			return acc;
+		}, []);
+};
+
 const searchLayer = (elem, lst, start, end) => {
 	if (end - 1 <= start) {
-			return start;
+		return start;
 	}
 	let mid = Math.floor((start + end) / 2);
 	if (elem < lst[mid]) {
-			return searchLayer(elem, lst, start, mid);
+		return searchLayer(elem, lst, start, mid);
 	}
 	if (elem > lst[mid]) {
-			return searchLayer(elem, lst, mid, end);
+		return searchLayer(elem, lst, mid, end);
 	}
 	// It's in the list, and we found it!!
 	return mid;
-}
+};
+
+export const map = (
+	value: number,
+	istart: number,
+	istop: number,
+	ostart: number,
+	ostop: number
+) => {
+	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+};
