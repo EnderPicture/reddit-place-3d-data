@@ -93,7 +93,7 @@
 				spinGroup.rotation.y = 0;
 
 				cameraTop.position.y = actualHeight - y;
-				cameraTop.zoom = 0.4 * controls.zoom;
+				cameraTop.zoom = map(controls.zoom, 0, 1, .2, 2);
 				cameraTop.updateProjectionMatrix();
 
 				renderer.render(scene, cameraTop);
@@ -102,8 +102,8 @@
 					spinGroup.rotation.y = time * 0.1;
 				}
 
-				let zoom = 1-controls.zoom;
-				let zoomDistance = map(zoom*zoom, 0, 1, 1000, 50000);
+				let zoom = 1 - controls.zoom;
+				let zoomDistance = map(zoom * zoom, 0, 1, 1000, 50000);
 
 				let xShift = Math.cos(-camera.rotation.x) * zoomDistance;
 				let yShift = Math.sin(-camera.rotation.x) * zoomDistance;
