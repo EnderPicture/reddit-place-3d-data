@@ -23,7 +23,7 @@
 		opacity: 0.5,
 		allWhite: false,
 		topView: false,
-		zoom: 0.1,
+		zoom: 0.5,
 		userId: 100
 	};
 
@@ -86,7 +86,7 @@
 
 		fetchAndAdd('all-reduced', spinGroup, material, 50);
 
-		loadLayer();
+		// loadLayer();
 
 		const animate = () => {
 			const time = Date.now() * 0.001;
@@ -157,6 +157,8 @@
 	$: date = new Date((actualHeight - y) * timeScale + offsetTime);
 	$: controls.opacity, controls.allWhite, controls.userId, y, updateMateiral();
 	$: windowWidth, windowHeight, resize();
+	$: controls.userId = controls.userId < 0 ? 0 : controls.userId;
+	$: controls.userId = largestUserId < controls.userId ? largestUserId : controls.userId;
 
 	const loadLayer = () => {
 		while (pointsGroup.children.length) {
@@ -176,7 +178,7 @@
 <div class="controls">
 	<input type="range" min="0" max="1" step="0.001" bind:value={controls.opacity} />
 	<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
-	<input type="number" bind:value={controls.userId} />
+	<input type="number" step="1" bind:value={controls.userId} />
 	<input type="checkbox" bind:checked={controls.allWhite} />
 	<input type="checkbox" bind:checked={controls.topView} />
 	<button on:click={loadLayer}>load all data at current time</button>

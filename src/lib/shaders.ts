@@ -35,6 +35,6 @@ void main() {
   if (selectedUserId == vUserId) {
     gl_FragColor.a = 1.0;
   }
-  gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
+  gl_FragColor.a *= texture2D( pointTexture, gl_PointCoord ).a;
 }
 `;
