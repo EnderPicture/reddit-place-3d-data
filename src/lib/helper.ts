@@ -124,7 +124,7 @@ export const fetchAndAdd = (
 				const geometry = new THREE.BufferGeometry();
 				geometry.setAttribute('position', new THREE.Float32BufferAttribute(slicedPositions, 3));
 				geometry.setAttribute('color', new THREE.Uint8BufferAttribute(slicedColors, 3));
-				geometry.setAttribute('userId', new THREE.Uint8BufferAttribute(slicedUserId, 3));
+				geometry.setAttribute('userId', new THREE.Uint32BufferAttribute(slicedUserId, 1));
 
 				// geometry.setDrawRange(0,10000);
 

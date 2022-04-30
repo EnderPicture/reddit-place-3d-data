@@ -23,7 +23,8 @@
 		opacity: 0.5,
 		allWhite: false,
 		topView: false,
-		zoom: 0.1
+		zoom: 0.1,
+		userId: 100
 	};
 
 	let y: number;
@@ -52,7 +53,7 @@
 		scene = new THREE.Scene();
 	};
 	const setupRenderer = () => {
-		renderer = new THREE.WebGLRenderer({ alpha: true });
+		renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true });
 		renderer.setSize(container.clientWidth, container.clientHeight);
 		container.appendChild(renderer.domElement);
 	};
@@ -72,7 +73,8 @@
 				pointTexture: { value: new THREE.TextureLoader().load('images/point.png') },
 				scrollPos: { value: 1 },
 				opacity: { value: 1 },
-				colorAdd: { value: 0 }
+				colorAdd: { value: 0 },
+				selectedUserId: { value: 0 }
 			},
 			vertexShader: vertexShader,
 			fragmentShader: fragShader,
@@ -93,7 +95,7 @@
 				spinGroup.rotation.y = 0;
 
 				cameraTop.position.y = actualHeight - y;
-				cameraTop.zoom = map(controls.zoom, 0, 1, .2, 2);
+				cameraTop.zoom = map(controls.zoom, 0, 1, 0.2, 2);
 				cameraTop.updateProjectionMatrix();
 
 				renderer.render(scene, cameraTop);
@@ -134,6 +136,8 @@
 			material.uniforms.scrollPos.value = y;
 			material.uniforms.opacity.value = opacity * opacity * opacity * opacity;
 			material.uniforms.colorAdd.value = allWhite ? 1 : 0;
+			material.uniforms.selectedUserId.value = controls.userId;
+			material.uniforms.selectedUserId.value = y;
 		}
 	};
 
@@ -152,7 +156,7 @@
 	};
 
 	$: date = new Date((actualHeight - y) * timeScale + offsetTime);
-	$: controls.opacity, controls.allWhite, y, updateMateiral();
+	$: controls.opacity, controls.allWhite, controls.userId, y, updateMateiral();
 	$: windowWidth, windowHeight, resize();
 
 	const loadLayer = () => {
