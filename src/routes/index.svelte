@@ -3,7 +3,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { bufferSplit, createAttributes, fetchAndAdd, map, timeToLayer } from '$lib/helper';
 	import { fragShader, vertexShader } from '$lib/shaders';
-	import { offsetTime, timeScale, totalHeight } from '$lib/config';
+	import { offsetTime, timeScale, totalHeight, largestUserId } from '$lib/config';
 
 	$: actualHeight = totalHeight / timeScale;
 
@@ -137,7 +137,6 @@
 			material.uniforms.opacity.value = opacity * opacity * opacity * opacity;
 			material.uniforms.colorAdd.value = allWhite ? 1 : 0;
 			material.uniforms.selectedUserId.value = controls.userId;
-			material.uniforms.selectedUserId.value = y;
 		}
 	};
 
@@ -177,6 +176,7 @@
 <div class="controls">
 	<input type="range" min="0" max="1" step="0.001" bind:value={controls.opacity} />
 	<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
+	<input type="number" bind:value={controls.userId} />
 	<input type="checkbox" bind:checked={controls.allWhite} />
 	<input type="checkbox" bind:checked={controls.topView} />
 	<button on:click={loadLayer}>load all data at current time</button>
