@@ -18,13 +18,15 @@
 
 	let windowWidth: number;
 	let windowHeight: number;
+	let lastTime = 0;
 
 	const controls = {
 		opacity: 0.5,
 		allWhite: false,
 		topView: false,
 		zoom: 0.5,
-		userId: 100
+		userId: 100,
+		spin: true
 	};
 
 	let y: number;
@@ -95,14 +97,15 @@
 				spinGroup.rotation.y = 0;
 
 				cameraTop.position.y = actualHeight - y;
-				cameraTop.zoom = map(controls.zoom, 0, 1, 0.2, 2);
+				cameraTop.zoom = map(controls.zoom, 0, 1, 0.1, 0.75);
 				cameraTop.updateProjectionMatrix();
 
 				renderer.render(scene, cameraTop);
 			} else {
-				if (spinGroup) {
-					spinGroup.rotation.y = time * 0.1;
+				if (spinGroup && controls.spin) {
+					spinGroup.rotation.y += (time - lastTime) * 0.25;
 				}
+				lastTime = time;
 
 				let zoom = 1 - controls.zoom;
 				let zoomDistance = map(zoom * zoom, 0, 1, 1000, 50000);
@@ -176,16 +179,47 @@
 <div class="height" style={`height: ${windowHeight + actualHeight - 1}px`} />
 
 <div class="controls">
-	<input type="range" min="0" max="1" step="0.001" bind:value={controls.opacity} />
-	<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
-	<input type="number" step="1" bind:value={controls.userId} />
-	<input type="checkbox" bind:checked={controls.allWhite} />
-	<input type="checkbox" bind:checked={controls.topView} />
-	<button on:click={loadLayer}>load all data at current time</button>
+	<label>
+		<p>opacity</p>
+		<input type="range" min="0" max="1" step="0.001" bind:value={controls.opacity} />
+	</label>
+	<label>
+		<p>zoom</p>
+		<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
+	</label>
+	<label>
+		<p>user id selector</p>
+		<input type="number" step="1" bind:value={controls.userId} />
+	</label>
+	<label>
+		<p>show all white</p>
+		<input type="checkbox" bind:checked={controls.allWhite} />
+	</label>
+	<label>
+		<p>top events view</p>
+
+		<input type="checkbox" bind:checked={controls.topView} />
+	</label>
+	<label>
+		<p>spin</p>
+
+		<input type="checkbox" bind:checked={controls.spin} />
+	</label>
+	<button on:click={loadLayer}>load all data at time</button>
 	<p>{date.toDateString()} {date.toLocaleTimeString()}</p>
 </div>
 
-<style>
+<style lang="scss">
+	label {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		p {
+			text-align: right;
+			margin: 0;
+		}
+		margin-bottom: 1rem;
+	}
 	.container {
 		position: fixed;
 		top: 0;
@@ -194,8 +228,9 @@
 		height: 100vh;
 	}
 	.controls {
+		padding: 1rem;
 		position: fixed;
-		top: 0;
+		bottom: 0;
 		left: 0;
 		color: white;
 		/* mix-blend-mode: difference; */
