@@ -177,9 +177,9 @@
 		});
 
 	const loadLayer = () => {
-		// while (pointsGroup.children.length) {
-		// 	pointsGroup.remove(pointsGroup.children[0]);
-		// }
+		while (pointsGroup.children.length) {
+			pointsGroup.remove(pointsGroup.children[0]);
+		}
 		let layer = timeToLayer((actualHeight - y) * timeScale);
 		if (layer > 160) layer = 160;
 		if (layer < 0) layer = 0;
