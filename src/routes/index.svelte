@@ -177,9 +177,9 @@
 		});
 
 	const loadLayer = () => {
-		while (pointsGroup.children.length) {
-			pointsGroup.remove(pointsGroup.children[0]);
-		}
+		// while (pointsGroup.children.length) {
+		// 	pointsGroup.remove(pointsGroup.children[0]);
+		// }
 		let layer = timeToLayer((actualHeight - y) * timeScale);
 		if (layer > 160) layer = 160;
 		if (layer < 0) layer = 0;
@@ -190,7 +190,14 @@
 <svelte:window bind:scrollY={y} bind:innerWidth={windowWidth} bind:innerHeight={windowHeight} />
 <div class="container" bind:this={container} />
 <div class="height" style={`height: ${windowHeight + actualHeight - 1}px`} />
-<p class="currentTime">{date.toDateString()} {date.toLocaleTimeString()}</p>
+<div class="currentTime">
+	<p>
+		{date.toDateString()}
+	</p>
+	<p>
+		{date.toLocaleTimeString()}
+	</p>
+</div>
 <div class="overlay">
 	{#each markers as marker}
 		<div class="marker" style={`top: calc(50vh + ${marker.offset}px)`}>
@@ -243,6 +250,9 @@
 		transform: translateY(-50%);
 		padding: 1rem;
 		margin: 0;
+		p {
+			margin: 0;
+		}
 	}
 	.overlay {
 		position: absolute;
@@ -285,6 +295,9 @@
 		bottom: 0;
 		left: 0;
 		color: white;
+		input {
+			min-width: 0;
+		}
 		button {
 			display: flex;
 			justify-content: center;
