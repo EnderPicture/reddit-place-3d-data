@@ -19,9 +19,10 @@
 	let windowWidth: number;
 	let windowHeight: number;
 	let lastTime = 0;
+	let numOfMarkers = 100;
 
 	const controls = {
-		opacity: 0.5,
+		opacity: 0.6,
 		allWhite: false,
 		topView: false,
 		zoom: 0.5,
@@ -103,7 +104,7 @@
 				renderer.render(scene, cameraTop);
 			} else {
 				if (spinGroup && controls.spin) {
-					spinGroup.rotation.y += (time - lastTime) * 0.25;
+					spinGroup.rotation.y += (time - lastTime) * 0.1;
 				}
 				lastTime = time;
 
@@ -145,15 +146,18 @@
 
 	const resize = () => {
 		if (renderer) {
-			camera.aspect = windowWidth / windowHeight;
+			const width = container.clientWidth;
+			const height = container.clientHeight;
+			renderer.setSize(width, height);
+
+			camera.aspect = width / height;
 			camera.updateProjectionMatrix();
 
-			cameraTop.left = container.clientWidth / -2;
-			cameraTop.right = container.clientWidth / 2;
-			cameraTop.top = container.clientHeight / 2;
-			cameraTop.bottom = container.clientHeight / -2;
+			cameraTop.left = width / -2;
+			cameraTop.right = width / 2;
+			cameraTop.top = height / 2;
+			cameraTop.bottom = height / -2;
 			cameraTop.updateProjectionMatrix();
-			renderer.setSize(windowWidth, windowHeight);
 		}
 	};
 
@@ -162,6 +166,15 @@
 	$: windowWidth, windowHeight, resize();
 	$: controls.userId = controls.userId < 0 ? 0 : controls.userId;
 	$: controls.userId = largestUserId < controls.userId ? largestUserId : controls.userId;
+	$: markers = Array(numOfMarkers + 1)
+		.fill(0)
+		.map((_, i) => {
+			let offset = (actualHeight / numOfMarkers) * i;
+			return {
+				offset,
+				date: new Date((actualHeight - offset) * timeScale + offsetTime)
+			};
+		});
 
 	const loadLayer = () => {
 		while (pointsGroup.children.length) {
@@ -177,6 +190,19 @@
 <svelte:window bind:scrollY={y} bind:innerWidth={windowWidth} bind:innerHeight={windowHeight} />
 <div class="container" bind:this={container} />
 <div class="height" style={`height: ${windowHeight + actualHeight - 1}px`} />
+<p class="currentTime">{date.toDateString()} {date.toLocaleTimeString()}</p>
+<div class="overlay">
+	{#each markers as marker}
+		<div class="marker" style={`top: calc(50vh + ${marker.offset}px)`}>
+			<p>
+				{marker.date.toDateString()}
+			</p>
+			<p>
+				{marker.date.toLocaleTimeString()}
+			</p>
+		</div>
+	{/each}
+</div>
 
 <div class="controls">
 	<label>
@@ -189,7 +215,7 @@
 	</label>
 	<label>
 		<p>user id selector</p>
-		<input type="number" step="1" bind:value={controls.userId} />
+		<input type="number" step="1" size="0" bind:value={controls.userId} />
 	</label>
 	<label>
 		<p>show all white</p>
@@ -206,10 +232,36 @@
 		<input type="checkbox" bind:checked={controls.spin} />
 	</label>
 	<button on:click={loadLayer}>load all data at time</button>
-	<p>{date.toDateString()} {date.toLocaleTimeString()}</p>
 </div>
 
 <style lang="scss">
+	.currentTime {
+		position: fixed;
+		top: 50vh;
+		right: 0;
+		color: white;
+		transform: translateY(-50%);
+		padding: 1rem;
+		margin: 0;
+	}
+	.overlay {
+		position: absolute;
+		top: 0;
+		right: 0;
+		color: white;
+		.marker {
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: 0;
+			white-space: nowrap;
+			padding: 1rem;
+			transform: translateY(-50%);
+			> p {
+				margin: 0;
+			}
+		}
+	}
 	label {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -218,7 +270,7 @@
 			text-align: right;
 			margin: 0;
 		}
-		margin-bottom: 1rem;
+		margin-bottom: 0.25rem;
 	}
 	.container {
 		position: fixed;
@@ -233,6 +285,13 @@
 		bottom: 0;
 		left: 0;
 		color: white;
-		/* mix-blend-mode: difference; */
+		button {
+			display: flex;
+			justify-content: center;
+			padding: 0.5rem 1rem;
+			border: none;
+			width: 100%;
+		}
+		// mix-blend-mode: difference;
 	}
 </style>
