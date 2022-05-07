@@ -4,6 +4,7 @@
 	import { bufferSplit, createAttributes, fetchAndAdd, map, timeToLayer } from '$lib/helper';
 	import { fragShader, vertexShader } from '$lib/shaders';
 	import { offsetTime, timeScale, totalHeight, largestUserId } from '$lib/config';
+	import { browser } from '$app/env';
 
 	$: actualHeight = totalHeight / timeScale;
 
@@ -21,13 +22,33 @@
 	let lastTime = 0;
 	let numOfMarkers = 100;
 
+	const bgColors = [
+		'#000',
+		'#111',
+		'#222',
+		'#333',
+		'#444',
+		'#555',
+		'#666',
+		'#777',
+		'#888',
+		'#999',
+		'#aaa',
+		'#bbb',
+		'#ccc',
+		'#ddd',
+		'#eee',
+		'#fff'
+	];
+
 	const controls = {
 		opacity: 0.6,
 		allWhite: false,
 		topView: false,
 		zoom: 0.5,
-		userId: 100,
-		spin: true
+		userId: 0,
+		spin: true,
+		bgColor: bgColors[0]
 	};
 
 	let y: number;
@@ -175,6 +196,7 @@
 				date: new Date((actualHeight - offset) * timeScale + offsetTime)
 			};
 		});
+	$: browser && (window.document.body.style.backgroundColor = controls.bgColor);
 
 	const loadLayer = () => {
 		while (pointsGroup.children.length) {
@@ -188,16 +210,8 @@
 </script>
 
 <svelte:window bind:scrollY={y} bind:innerWidth={windowWidth} bind:innerHeight={windowHeight} />
-<div class="container" bind:this={container} />
+<div class="container" bind:this={container} on:click={() => (controls.spin = !controls.spin)} />
 <div class="height" style={`height: ${windowHeight + actualHeight - 1}px`} />
-<div class="currentTime">
-	<p>
-		{date.toDateString()}
-	</p>
-	<p>
-		{date.toLocaleTimeString()}
-	</p>
-</div>
 <div class="overlay">
 	{#each markers as marker}
 		<div class="marker" style={`top: calc(50vh + ${marker.offset}px)`}>
@@ -210,9 +224,22 @@
 		</div>
 	{/each}
 </div>
+<div class="currentTime marker">
+	<p>
+		{date.toDateString()}
+	</p>
+	<p>
+		{date.toLocaleTimeString()}
+	</p>
+</div>
 
 <div class="controls">
-	<label>
+	<div class="color-selectors">
+		{#each bgColors as color}
+			<button style={`background-color: ${color}`} on:click={() => (controls.bgColor = color)} />
+		{/each}
+	</div>
+	<label title="the opacity of the points">
 		<p>opacity</p>
 		<input type="range" min="0" max="1" step="0.001" bind:value={controls.opacity} />
 	</label>
@@ -220,57 +247,45 @@
 		<p>zoom</p>
 		<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
 	</label>
-	<label>
-		<p>user id selector</p>
+	<label title="user selected always opacity 100% and larger in size">
+		<p>user id</p>
 		<input type="number" step="1" size="0" bind:value={controls.userId} />
 	</label>
-	<label>
-		<p>show all white</p>
+	<label title="turns all poitns white">
+		<p>pure density</p>
 		<input type="checkbox" bind:checked={controls.allWhite} />
 	</label>
-	<label>
-		<p>top events view</p>
-
+	<label title="top view of slices of time">
+		<p>top view</p>
 		<input type="checkbox" bind:checked={controls.topView} />
-	</label>
-	<label>
-		<p>spin</p>
-
-		<input type="checkbox" bind:checked={controls.spin} />
 	</label>
 	<button on:click={loadLayer}>load all data at time</button>
 </div>
 
 <style lang="scss">
-	.currentTime {
-		position: fixed;
-		top: 50vh;
-		right: 0;
-		color: white;
-		transform: translateY(-50%);
-		padding: 1rem;
-		margin: 0;
-		p {
-			margin: 0;
-		}
-	}
 	.overlay {
 		position: absolute;
 		top: 0;
 		right: 0;
+	}
+	.marker {
 		color: white;
-		.marker {
-			position: absolute;
-			top: 0;
-			right: 0;
+		position: absolute;
+		top: 0;
+		right: 0;
+		margin: 0;
+		white-space: nowrap;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem 0 0 0.5rem;
+		transform: translateY(-50%);
+		background-color: #0005;
+		> p {
 			margin: 0;
-			white-space: nowrap;
-			padding: 1rem;
-			transform: translateY(-50%);
-			> p {
-				margin: 0;
-			}
 		}
+	}
+	.currentTime {
+		position: fixed;
+		top: 50vh;
 	}
 	label {
 		display: grid;
@@ -295,6 +310,7 @@
 		bottom: 0;
 		left: 0;
 		color: white;
+		background-color: #0005;
 		input {
 			min-width: 0;
 		}
@@ -306,5 +322,17 @@
 			width: 100%;
 		}
 		// mix-blend-mode: difference;
+	}
+
+	.color-selectors {
+		display: flex;
+		margin-bottom: 0.5rem;
+		> button {
+			padding: 0;
+			height: 2rem;
+			&:hover {
+				cursor: pointer;
+			}
+		}
 	}
 </style>

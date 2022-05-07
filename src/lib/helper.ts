@@ -11,7 +11,6 @@ export const bufferSplit = (buffer: ArrayBuffer) => {
 	let offset = 0;
 	const metadata = new Uint32Array(buffer, offset, 1);
 	const [arrayLength] = metadata;
-	console.log(arrayLength);
 
 	const timeBuffer = new Uint32Array(buffer, (offset += 4), arrayLength);
 	const userIdBuffer = new Uint32Array(buffer, (offset += arrayLength * 4), arrayLength);
