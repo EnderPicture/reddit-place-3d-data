@@ -247,11 +247,11 @@
 		<p>zoom</p>
 		<input type="range" min="0" max="1" step="0.001" bind:value={controls.zoom} />
 	</label>
-	<label title="user selected always opacity 100% and larger in size">
+	<label title="user selected will always have an opacity of 100% and show larger in size">
 		<p>user id</p>
 		<input type="number" step="1" size="0" bind:value={controls.userId} />
 	</label>
-	<label title="turns all poitns white">
+	<label title="turns all points white">
 		<p>pure density</p>
 		<input type="checkbox" bind:checked={controls.allWhite} />
 	</label>
